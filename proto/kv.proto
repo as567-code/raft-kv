@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+package kv;
+
+option go_package = "github.com/as567-code/raft-kv/proto/kvpb";
+
+service KVService {
+  rpc Put(PutRequest) returns (PutResponse);
+  rpc Get(GetRequest) returns (GetResponse);
+  rpc Delete(DeleteRequest) returns (DeleteResponse);
+  rpc Scan(ScanRequest) returns (ScanResponse);
+}
+
+enum ReadMode {
+  READ_LEADER = 0;       // Linearizable — read through Raft
+  READ_LEASE_BASED = 1;  // Bounded staleness — follower with lease
+  READ_FOLLOWER = 2;     // Eventual — any node's local store
+}
+
+enum ConsistencyMode {
+  CONSISTENCY_STRONG = 0;    // All writes through Raft
+  CONSISTENCY_EVENTUAL = 1;  // Writes to local CRDT store
+}
+
+message PutRequest {
+  string key = 1;
+  string value = 2;
+  ConsistencyMode consistency = 3;
+}
+
+message PutResponse {
+  bool success = 1;
+  string leader_hint = 2;  // If not leader, hint where to go
+}
+
+message GetRequest {
+  string key = 1;
+  ReadMode read_mode = 2;
+}
+
+message GetResponse {
+  string value = 1;
+  bool found = 2;
+  string leader_hint = 3;
+}
+
+message DeleteRequest {
+  string key = 1;
+}
+
+message DeleteResponse {
+  bool success = 1;
+  string leader_hint = 2;
+}
+
+message ScanRequest {
+  string prefix = 1;
+  ReadMode read_mode = 2;
+}
+
+message ScanResponse {
+  map<string, string> pairs = 1;
+}
+
+message KeyValue {
+  string key = 1;
+  string value = 2;
+}
