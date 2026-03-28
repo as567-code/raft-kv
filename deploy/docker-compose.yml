@@ -1,0 +1,118 @@
+services:
+  node1:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    container_name: raft-kv-node1
+    environment:
+      - NODE_ID=node1
+      - LISTEN_ADDR=:50051
+      - CLIENT_ADDR=:50061
+      - METRICS_ADDR=:9090
+      - DATA_DIR=/data
+      - PEERS=node2=node2:50051,node3=node3:50051
+      - ELECTION_MIN_MS=500
+      - ELECTION_MAX_MS=1000
+      - HEARTBEAT_MS=50
+    ports:
+      - "50051:50051"
+      - "50061:50061"
+      - "9091:9090"
+    volumes:
+      - node1-data:/data
+    networks:
+      - raft-net
+    cap_add:
+      - NET_ADMIN
+
+  node2:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    container_name: raft-kv-node2
+    environment:
+      - NODE_ID=node2
+      - LISTEN_ADDR=:50051
+      - CLIENT_ADDR=:50061
+      - METRICS_ADDR=:9090
+      - DATA_DIR=/data
+      - PEERS=node1=node1:50051,node3=node3:50051
+      - ELECTION_MIN_MS=500
+      - ELECTION_MAX_MS=1000
+      - HEARTBEAT_MS=50
+    ports:
+      - "50052:50051"
+      - "50062:50061"
+      - "9092:9090"
+    volumes:
+      - node2-data:/data
+    networks:
+      - raft-net
+    cap_add:
+      - NET_ADMIN
+
+  node3:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    container_name: raft-kv-node3
+    environment:
+      - NODE_ID=node3
+      - LISTEN_ADDR=:50051
+      - CLIENT_ADDR=:50061
+      - METRICS_ADDR=:9090
+      - DATA_DIR=/data
+      - PEERS=node1=node1:50051,node2=node2:50051
+      - ELECTION_MIN_MS=500
+      - ELECTION_MAX_MS=1000
+      - HEARTBEAT_MS=50
+    ports:
+      - "50053:50051"
+      - "50063:50061"
+      - "9093:9090"
+    volumes:
+      - node3-data:/data
+    networks:
+      - raft-net
+    cap_add:
+      - NET_ADMIN
+
+  prometheus:
+    image: prom/prometheus:v2.51.0
+    container_name: raft-kv-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - raft-net
+    depends_on:
+      - node1
+      - node2
+      - node3
+
+  grafana:
+    image: grafana/grafana:10.4.0
+    container_name: raft-kv-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+    networks:
+      - raft-net
+    depends_on:
+      - prometheus
+
+volumes:
+  node1-data:
+  node2-data:
+  node3-data:
+
+networks:
+  raft-net:
+    driver: bridge

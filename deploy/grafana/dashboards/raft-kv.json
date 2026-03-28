@@ -1,0 +1,102 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "title": "Leader Elections Total",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "expr": "sum(raft_elections_total)",
+          "legendFormat": "Elections"
+        }
+      ]
+    },
+    {
+      "title": "Commit Index",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
+      "targets": [
+        {
+          "expr": "raft_commit_index",
+          "legendFormat": "{{ instance }}"
+        }
+      ]
+    },
+    {
+      "title": "KV Operations/sec",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
+      "targets": [
+        {
+          "expr": "rate(kv_operations_total[1m])",
+          "legendFormat": "{{ op_type }}-{{ status }}"
+        }
+      ]
+    },
+    {
+      "title": "KV Operation Latency (p99)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 12 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.99, rate(kv_operation_duration_seconds_bucket[1m]))",
+          "legendFormat": "{{ op_type }} p99"
+        }
+      ]
+    },
+    {
+      "title": "Replication Lag",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 12 },
+      "targets": [
+        {
+          "expr": "raft_log_replication_lag",
+          "legendFormat": "{{ follower }}"
+        }
+      ]
+    },
+    {
+      "title": "Throughput (ops/sec)",
+      "type": "gauge",
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 0 },
+      "targets": [
+        {
+          "expr": "kv_throughput_ops_per_second",
+          "legendFormat": "{{ instance }}"
+        }
+      ]
+    },
+    {
+      "title": "Election Duration",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.99, rate(raft_election_duration_seconds_bucket[5m]))",
+          "legendFormat": "p99"
+        },
+        {
+          "expr": "histogram_quantile(0.50, rate(raft_election_duration_seconds_bucket[5m]))",
+          "legendFormat": "p50"
+        }
+      ]
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 39,
+  "tags": ["raft", "kv"],
+  "templating": { "list": [] },
+  "time": { "from": "now-15m", "to": "now" },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Raft KV Store",
+  "uid": "raft-kv-dashboard",
+  "version": 1
+}
