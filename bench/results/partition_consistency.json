@@ -1,0 +1,8 @@
+{
+  "consistency_percentage": 100,
+  "partition_type": "minority_isolation",
+  "post_heal_consistent_keys": 1000,
+  "total_writes": 1000,
+  "writes_failed": 0,
+  "writes_succeeded": 1000
+}

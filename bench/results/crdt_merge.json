@@ -1,0 +1,10 @@
+{
+  "description": "majority write wins via Raft replication after partition heal",
+  "node_values": {
+    "raft-kv-node1": "v1-majority",
+    "raft-kv-node2": "v1-majority",
+    "raft-kv-node3": "v1-majority"
+  },
+  "resolved_by": "raft_replication",
+  "test": "crdt_merge_after_partition"
+}

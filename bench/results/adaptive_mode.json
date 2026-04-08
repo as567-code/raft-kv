@@ -1,0 +1,10 @@
+{
+  "description": "strong -\u003e eventual (partition) -\u003e strong (heal)",
+  "partition_duration_seconds": 1.8,
+  "test": "adaptive_mode_switching",
+  "transitions": [
+    "strong_write_ok@0.0s",
+    "eventual_write_ok@1.5s",
+    "strong_write_resumed@4.8s"
+  ]
+}

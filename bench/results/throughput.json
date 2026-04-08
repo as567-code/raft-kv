@@ -1,0 +1,11 @@
+{
+  "duration_seconds": 10.01,
+  "error_rate": 0,
+  "num_clients": 50,
+  "ops_per_second": 1817.13,
+  "p50_latency_ms": 25.98,
+  "p95_latency_ms": 43.67,
+  "p99_latency_ms": 54.19,
+  "total_errors": 0,
+  "total_ops": 18192
+}
